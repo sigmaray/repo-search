@@ -19,6 +19,3 @@
 
 # Ignore master key for decrypting credentials and more.
 /config/master.key
-
-# Ignore private env file for Docker
-/build/docker/app/dev.env.private
