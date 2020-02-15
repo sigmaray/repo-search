@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: build/docker/app/Dockerfile
+    env_file:
+      - build/docker/app/dev.env
+      - build/docker/app/dev.env.private
+    volumes:
+      - .:/app
+    ports:
+      - 4444:3000
+    command: ["/app/build/docker/app/start.sh"]
+    stdin_open: true
+    tty: true
