@@ -1,3 +1,5 @@
+import './../../stylesheets/app.css';
+
 import axios from 'axios';
 
 import debounce from './../functions/debounce';
@@ -6,7 +8,9 @@ import setupAxios from './../functions/setup-axios';
 setupAxios();
 
 document.addEventListener('DOMContentLoaded', () => {
-  let repoSearchInputs = document.querySelectorAll('input[data-role="repo-search-input"]');
+  const resultsContainer = document.getElementById('repo-search-results');
+  const itemTemplate = resultsContainer.dataset.itemTemplate;
+  const repoSearchInputs = document.querySelectorAll('input[data-role="repo-search-input"]');
 
   repoSearchInputs.forEach(function(input) {
     const searchRepos = () => {
@@ -14,10 +18,19 @@ document.addEventListener('DOMContentLoaded', () => {
         input.dataset.url,
         { query: input.value }
       ).then(function (response) {
-        console.log(response);
+        resultsContainer.innerHTML = response.data.map((itemData) => {
+          let html = itemTemplate;
+          html = html.replace('{{htmlUrl}}', itemData.html_url);
+          html = html.replace('{{repo}}', itemData.name);
+          html = html.replace('{{owner}}', itemData.owner);
+          html = html.replace('{{stargazersCount}}', itemData.stargazers_count);
+
+          return html;
+        }).join('');
       });
     };
 
-    input.addEventListener('keyup', debounce(searchRepos, 250));
+    input.addEventListener('keydown', () => resultsContainer.innerHTML = '');
+    input.addEventListener('keyup', debounce(searchRepos, 100));
   });
 })

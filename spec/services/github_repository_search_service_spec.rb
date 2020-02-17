@@ -1,9 +1,13 @@
 RSpec.describe GithubRepositorySearchService, type: :model do
-  subject(:service) { described_class.new(raw_credentials: raw_credentials) }
+  subject(:service) { described_class.new }
 
   describe '#search' do
     let(:query) { 'rails+language:ruby' }
     let(:json_string_mock) { '{}' }
+
+    before do
+      stub_const("#{described_class}::API_RAW_CREDENTIALS", [raw_credentials])
+    end
 
     context 'given credentials were provided' do
       let(:raw_credentials) { 'username:token' }

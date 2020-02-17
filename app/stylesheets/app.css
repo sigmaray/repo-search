@@ -1,0 +1,14 @@
+.repo-link {
+  position: relative;
+}
+
+.repo-link > .stargazer {
+  position: absolute;
+  right: 1em;
+  top: .4em;
+}
+
+.repo-link > .stargazer > .panel-icon {
+  margin-top: .4em;
+  margin-right: .25em;
+}

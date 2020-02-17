@@ -1,7 +1,21 @@
 <section class="section">
-  <div class="container">
-    <div class="control">
-      <input class="input" type="text" placeholder="Search Github repositories" data-role="repo-search-input" data-url="<%= api_v1_github_repository_searches_url %>">
+  <div class="columns">
+    <div class="column is-one-third is-offset-one-third">
+      <article class="panel is-info">
+        <p class="panel-heading">
+          Search Github repositories
+        </p>
+        <div class="panel-block">
+          <p class="control has-icons-left">
+            <input class="input is-info" type="text" placeholder="Search" data-role="repo-search-input" data-url="<%= api_v1_github_repository_searches_url %>">
+            <span class="icon is-left">
+              <i class="fas fa-search" aria-hidden="true"></i>
+            </span>
+          </p>
+        </div>
+
+        <div id="repo-search-results" data-item-template="<%= render('repo_template').gsub('"', "'").html_safe %>"></div>
+      </article>
     </div>
   </div>
 </section>
