@@ -4,7 +4,7 @@ module API::V1
       search_service = GithubRepositorySearchService.new
       render json: search_service.search(query_param), status: :created
     rescue GithubRepositorySearchService::RateLimitExceeded => err
-      render json: { error: err.message }, status: :forbidden
+      render json: { message: err.message }, status: :forbidden
     end
 
     private

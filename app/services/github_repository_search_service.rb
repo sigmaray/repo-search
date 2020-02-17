@@ -20,8 +20,7 @@ class GithubRepositorySearchService
     raise InvalidResponseError, cause: err
   rescue RestClient::Forbidden => err
     raise RateLimitExceeded,
-      cause: err,
-      message: formatted_rate_limit_error(err.http_headers[:x_ratelimit_reset])
+      formatted_rate_limit_error(err.http_headers[:x_ratelimit_reset])
   end
 
   private

@@ -14,7 +14,8 @@
           </p>
         </div>
 
-        <div id="repo-search-results" data-item-template="<%= render('repo_template').gsub('"', "'").html_safe %>"></div>
+        <div id="repo-search-results" data-item-template="<%= escape_html_template(render('repo_template')) %>" data-error-message-template="<%= escape_html_template(render('error_message_template')) %>">
+        </div>
       </article>
     </div>
   </div>
