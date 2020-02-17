@@ -12,6 +12,18 @@ services:
       - .:/app
     ports:
       - 4444:3000
-    command: ["/app/build/docker/app/start.sh"]
+    command: ["bundle", "exec", "puma"]
     stdin_open: true
     tty: true
+
+  webpacker:
+    build:
+      context: .
+      dockerfile: build/docker/webpacker/Dockerfile
+    env_file:
+      - build/docker/webpacker/dev.env
+    volumes:
+      - .:/app
+    ports:
+      - 3035:3035
+    command: ["./bin/webpack-dev-server"]
