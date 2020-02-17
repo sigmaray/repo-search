@@ -4,19 +4,16 @@
 
 This project is a single-page application that allows to search public Github repositories.
 
-Dependencies:
-  - Redis (for github access token rotation)
-
 ## Local configuration
 
-To make more than 10 search requests per minute, you can configure the application to use API tokens for several Github accounts. It will also work without tokens, but you will only get lousy 10 rpm.
+To make 30 search request per minute instead of 10, you can configure the application to use Github API token.
 
 [Guide on creating an API token](https://help.github.com/en/github/authenticating-to-github/creating-a-personal-access-token-for-the-command-line)
 
-Tokens must be then added to `build/docker/app/dev.env.private` (username:token, comma separated, since it's an ENV variable):
+Token must be then added to `build/docker/app/dev.env.private` (username:token):
 
 ```bash
-GITHUB_ACCESS_TOKENS=y9v:TOKEN_A,other_user:TOKEN_B
+GITHUB_API_CREDENTIALS=y9v:TOKEN
 ```
 
 ## Running the app

@@ -5,9 +5,10 @@ RSpec.describe GithubRepositorySearchService, type: :model do
     let(:query) { 'rails+language:ruby' }
     let(:response_body) { {} }
     let(:response_mock) { OpenStruct.new(body: JSON.dump(response_body)) }
+    let(:raw_credentials) { nil }
 
     before do
-      stub_const("#{described_class}::API_RAW_CREDENTIALS", [raw_credentials])
+      stub_const("#{described_class}::API_RAW_CREDENTIALS", raw_credentials)
     end
 
     context 'given credentials were provided' do
@@ -55,8 +56,6 @@ RSpec.describe GithubRepositorySearchService, type: :model do
     end
 
     context 'given no credentials were provided' do
-      let(:raw_credentials) { nil }
-
       it 'calls RestClient.get with correct params, without Authorization header' do
         expect(RestClient).to receive(:get).with(
           "#{described_class::API_BASE_URL}/search/repositories",
@@ -69,8 +68,6 @@ RSpec.describe GithubRepositorySearchService, type: :model do
     end
 
     context 'given invalid JSON resonse from Github' do
-      let(:raw_credentials) { nil }
-
       before do
         allow(RestClient).to receive(:get).and_return(OpenStruct.new(body: ''))
       end
@@ -79,6 +76,21 @@ RSpec.describe GithubRepositorySearchService, type: :model do
         expect do
           service.search(query)
         end.to raise_error(described_class::InvalidResponseError)
+      end
+    end
+
+    context 'when Github API rate limit is exceeded' do
+      before do
+        exception = RestClient::Forbidden.new(
+          OpenStruct.new(headers: { x_ratelimit_reset: 3.seconds.from_now.to_i })
+        )
+        allow(RestClient).to receive(:get).and_raise(exception)
+      end
+
+      it "raises #{described_class}::RateLimitExceeded" do
+        expect do
+          service.search(query)
+        end.to raise_error(described_class::RateLimitExceeded)
       end
     end
   end

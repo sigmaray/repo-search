@@ -1,8 +1,9 @@
 class GithubRepositorySearchService
   class InvalidResponseError < StandardError; end
+  class RateLimitExceeded < StandardError; end
 
   API_BASE_URL = ENV.fetch('GITHUB_API_BASE_URL')
-  API_RAW_CREDENTIALS = ENV['GITHUB_API_CREDENTIALS'].to_s.split(',').freeze
+  API_RAW_CREDENTIALS = ENV['GITHUB_API_CREDENTIALS']
 
   SEARCH_RESULTS_MAX_AMOUNT = 10
 
@@ -17,11 +18,13 @@ class GithubRepositorySearchService
     transform_response(JSON.parse(raw_response.body, symbolize_names: true))
   rescue JSON::ParserError => err
     raise InvalidResponseError, cause: err
+  rescue RestClient::Forbidden => err
+    raise RateLimitExceeded,
+      cause: err,
+      message: formatted_rate_limit_error(err.http_headers[:x_ratelimit_reset])
   end
 
   private
-
-  attr_reader :credentials
 
   def transform_response(response)
     response.fetch(:items, []).take(SEARCH_RESULTS_MAX_AMOUNT).map do |data_item|
@@ -42,12 +45,17 @@ class GithubRepositorySearchService
   end
 
   def credentials
-    # TODO: mark credentials as depleted
-    parse_raw_credentials(API_RAW_CREDENTIALS.sample)
+    return unless API_RAW_CREDENTIALS
+    GithubAPICredentials.parse_raw_string(API_RAW_CREDENTIALS)
   end
 
-  def parse_raw_credentials(raw_credentials)
-    return unless raw_credentials
-    GithubAPICredentials.parse_raw_string(raw_credentials)
+  def formatted_rate_limit_error(ratelimit_reset_header)
+    # server time is UTC, no need for conversion
+    seconds_until_reset = Integer(ratelimit_reset_header) - Time.zone.now.to_i
+
+    I18n.t(
+      'errors.github_rate_limit_exceeded',
+      seconds: "#{seconds_until_reset} #{I18n.t('units.time.second', count: seconds_until_reset)}"
+    )
   end
 end

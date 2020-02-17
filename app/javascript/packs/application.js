@@ -36,10 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     input.addEventListener('keydown', () => {
-      if (input.value !== lastQuery) {
-        // clear search results, when input value changes
-        resultsContainer.innerHTML = ''
-      }
+      if (input.value !== lastQuery) { resultsContainer.innerHTML = '' }
     });
 
     input.addEventListener('keyup', debounce(searchRepos, 100));
