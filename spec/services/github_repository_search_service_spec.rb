@@ -28,14 +28,16 @@ RSpec.describe GithubRepositorySearchService, type: :model do
         }
       end
 
+      before do
+        allow(RestClient).to receive(:get).and_return(response_mock)
+      end
+
       it 'calls RestClient.get with correct params, including Authorization header' do
         expect(RestClient).to receive(:get).with(
           "#{described_class::API_BASE_URL}/search/repositories",
           params: { q: query, sort: 'stars', order: 'desc' },
-          headers: {
-            accept: 'application/json',
-            'Authorization' => "Basic #{credentials.base64_encoded}"
-          }
+          accept: 'application/json',
+          'Authorization' => "Basic #{credentials.base64_encoded}"
         ).and_return(response_mock)
 
         service.search(query)
@@ -59,7 +61,7 @@ RSpec.describe GithubRepositorySearchService, type: :model do
         expect(RestClient).to receive(:get).with(
           "#{described_class::API_BASE_URL}/search/repositories",
           params: { q: query, sort: 'stars', order: 'desc' },
-          headers: { accept: 'application/json' }
+          accept: 'application/json'
         ).and_return(response_mock)
 
         service.search(query)

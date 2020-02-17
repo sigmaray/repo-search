@@ -10,7 +10,8 @@ class GithubRepositorySearchService
     raw_response = RestClient.get(
       "#{API_BASE_URL}/search/repositories",
       params: { q: query.strip, sort: sort, order: order },
-      headers: { **request_headers, **basic_auth_header }
+      **request_headers,
+      **basic_auth_header
     )
 
     transform_response(JSON.parse(raw_response.body, symbolize_names: true))

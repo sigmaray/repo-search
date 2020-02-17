@@ -12,8 +12,13 @@ document.addEventListener('DOMContentLoaded', () => {
   const itemTemplate = resultsContainer.dataset.itemTemplate;
   const repoSearchInputs = document.querySelectorAll('input[data-role="repo-search-input"]');
 
+  let lastQuery = '';
+
   repoSearchInputs.forEach(function(input) {
     const searchRepos = () => {
+      if (input.value === lastQuery) { return };
+      lastQuery = input.value;
+
       axios.post(
         input.dataset.url,
         { query: input.value }
@@ -30,7 +35,13 @@ document.addEventListener('DOMContentLoaded', () => {
       });
     };
 
-    input.addEventListener('keydown', () => resultsContainer.innerHTML = '');
+    input.addEventListener('keydown', () => {
+      if (input.value !== lastQuery) {
+        // clear search results, when input value changes
+        resultsContainer.innerHTML = ''
+      }
+    });
+
     input.addEventListener('keyup', debounce(searchRepos, 100));
   });
 })
