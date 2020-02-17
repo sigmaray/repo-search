@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import debounce from './../functions/debounce';
 
 import setupAxios from './../functions/setup-axios';
@@ -8,7 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   repoSearchInputs.forEach(function(input) {
     const searchRepos = () => {
-      console.log(input.value)
+      axios.post(
+        input.dataset.url,
+        { query: input.value }
+      ).then(function (response) {
+        console.log(response);
+      });
     };
 
     input.addEventListener('keyup', debounce(searchRepos, 250));
