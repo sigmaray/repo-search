@@ -4,8 +4,7 @@ class GithubRepositorySearchService
   API_BASE_URL = ENV.fetch('GITHUB_API_BASE_URL')
   API_RAW_CREDENTIALS = ENV['GITHUB_API_CREDENTIALS'].to_s.split(',').freeze
 
-  def initialize
-  end
+  SEARCH_RESULTS_MAX_AMOUNT = 10
 
   def search(query, sort: 'stars', order: 'desc')
     raw_response = RestClient.get(
@@ -24,7 +23,7 @@ class GithubRepositorySearchService
   attr_reader :credentials
 
   def transform_response(response)
-    response.fetch(:items, []).take(10).map do |data_item|
+    response.fetch(:items, []).take(SEARCH_RESULTS_MAX_AMOUNT).map do |data_item|
       data_item
         .slice(:name, :html_url, :stargazers_count)
         .merge(owner: data_item.dig(:owner, :login))
