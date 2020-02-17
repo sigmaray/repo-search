@@ -3,7 +3,7 @@ RSpec.describe GithubRepositorySearchService, type: :model do
 
   describe '#search' do
     let(:query) { 'rails+language:ruby' }
-    let(:json_string_mock) { '{}' }
+    let(:response_mock) { OpenStruct.new(body: '{}') }
 
     before do
       stub_const("#{described_class}::API_RAW_CREDENTIALS", [raw_credentials])
@@ -21,7 +21,7 @@ RSpec.describe GithubRepositorySearchService, type: :model do
             accept: 'application/json',
             'Authorization' => "Basic #{credentials.base64_encoded}"
           }
-        ).and_return(json_string_mock)
+        ).and_return(response_mock)
 
         service.search(query)
       end
@@ -35,7 +35,7 @@ RSpec.describe GithubRepositorySearchService, type: :model do
           "#{described_class::API_BASE_URL}/search/repositories",
           params: { q: query, sort: 'stars', order: 'desc' },
           headers: { accept: 'application/json' }
-        ).and_return(json_string_mock)
+        ).and_return(response_mock)
 
         service.search(query)
       end
@@ -45,7 +45,7 @@ RSpec.describe GithubRepositorySearchService, type: :model do
       let(:raw_credentials) { nil }
 
       before do
-        allow(RestClient).to receive(:get).and_return('')
+        allow(RestClient).to receive(:get).and_return(OpenStruct.new(body: ''))
       end
 
       it "raises #{described_class}::InvalidResponseError" do
